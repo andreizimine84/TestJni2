@@ -1,0 +1,185 @@
+<html>
+<head>
+<meta charset="utf-8">
+<body bgcolor="#d3d3d3">
+<style>
+body {
+	  font: 10px sans-serif;
+	}
+
+	.bar rect {
+	  fill: steelblue;
+	  shape-rendering: crispEdges;
+	}
+
+	.bar text {
+	  fill: #000000;
+	}
+
+	.axis path, .axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+
+	.normline {
+	  stroke-width: 2;
+	  stroke: blue;
+	  fill: none;
+	}
+	
+	select{
+	    border-radius: 8px;
+	    border: 2px solid gray;
+	    height: 25px;
+	    color: gray;
+	}
+		select {
+		  border: 2px solid #333;
+		  display: inline-block;
+		  border-radius: 5px;
+		  width: 200px;
+		  color: #ccc;
+		  height: 30px;
+		  line-height: 30px;
+		}
+</style>
+<select id="selectFiles" onChange="OnSelectedIndexChange()">
+<option>Choose a file</option>
+</select>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://cdn.jsdelivr.net/jstat/latest/jstat.min.js"></script>
+<svg width="400" height="100"></svg>
+<title>hello</title>
+</head>
+<body>
+</body>
+<script>
+var margin, width, height;
+var data;
+var dataFromFile;
+var filesArray = new Array();
+
+d3.csv("fileNames.txt", function(data) {
+	// felhantering i json om filen inte finns
+	// values kan gå minus
+	for (i = 0; i < data.length; i++) {
+		filesArray.push(data[i].Files);
+	}
+	callElement();	
+});
+
+function callElement() {
+	var select = document.getElementById("selectFiles");
+	for(var i = 0; i < filesArray.length; i++) {
+	    var opt = filesArray[i];
+	    var el = document.createElement("option");
+	    el.textContent = opt;
+	    el.value = opt;
+	    select.appendChild(el);
+	}
+}	
+
+function OnSelectedIndexChange(){
+	var name = document.getElementById('selectFiles').value;
+	d3.json(name + ".json", function(error, data) {
+		if(error != null)
+			alert(error.message);
+		var values = [];
+		for (var d in data[0]){	
+			data[0][d].forEach(function(v) {
+				if(typeof(v) === "boolean"){
+					values.push(d ? 1 : 0);
+				} else {
+					values.push(v);
+				}
+				// http://stackoverflow.com/questions/7693170/javascript-convert-from-epoch-string-to-date-object
+				// if date button:
+				//     values.push(new Date(v));
+			});
+		}
+		data = values;
+		d3.select("svg").remove();
+		var formatCount = d3.format(",.0f");
+		
+		var margin = {top: 10, right: 30, bottom: 30, left: 30},
+		    width = 500 - margin.left - margin.right,
+		    height = 800 - margin.top - margin.bottom;
+
+		var max = d3.max(data);
+		var min = d3.min(data);
+		if (min == max) {
+			min = min - min * 0.1;
+			max = max + min * 0.1;
+		}
+		
+		var x = d3.scale.linear()
+		.domain([min, max])
+		.range([0, 400]);
+		
+		data = d3.layout.histogram()
+		.bins(x.ticks(20))
+		(data);
+		console.log("data:" + data);
+		
+		var yMax = d3.max(data, function(d){return d.length});
+		var yMin = d3.min(data, function(d){return d.length});
+		var y = d3.scale.linear()
+		    .domain([0, yMax])
+		    .range([height , 0]);
+
+		// add time formatter if button for time axis is pressed
+		// http://stackoverflow.com/questions/15471224/how-to-format-time-on-xaxis-use-d3-js		
+		var xAxis = d3.svg.axis()
+		    .scale(x)
+		    .orient("bottom");
+		
+		var yAxis = d3.svg.axis()
+	    .scale(y)
+	    .orient("left")
+	    .ticks(10);
+		
+		var svg = d3.select("body").append("svg")
+		    .attr("width", width + margin.left + margin.right)
+		    .attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		
+		var bar = svg.selectAll(".bar")
+		.data(data)
+		.enter().append("g")
+		.attr("class", "bar")
+		.attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+		
+		bar.append("rect")
+		.attr("x", 1)
+		.attr("width", (x(data[0].dx) - x(0)) - 1)
+		.attr("height", function(d) { return height - y(d.y); });
+		
+		bar.append("text")
+		.attr("dy", ".75em")
+		.attr("y", -12)
+		.attr("x", (x(data[0].dx) - x(0)) / 2)
+		.attr("text-anchor", "middle");
+		
+		svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+		
+		svg.append("g")
+	      .attr("class", "y axis")
+	      .call(yAxis)
+	    .append("text")
+	      .attr("transform", "rotate(-90)")
+	      .attr("y", 6)
+	      .attr("dy", ".71em")
+	      .style("text-anchor", "end")
+	      .text(name);
+		
+	})
+}
+
+</script>
+</html>

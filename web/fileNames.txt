@@ -1,0 +1,11 @@
+Files
+InfoStream_com.testjni2
+NetworkInfoStream_WIFI
+TimeInfoStream_com.android.music
+SensorInfoStream_Goldfish 3-axis Accelerometer
+BatteryInfo_status
+BatteryInfo_isCharging
+BatteryInfo_chargePlug
+BatteryInfo_usbCharge
+BatteryInfo_acCharge
+NetworkInfo_TYPE_WIFI

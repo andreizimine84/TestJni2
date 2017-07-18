@@ -1,0 +1,24 @@
+Files
+com.helloworld.com.testjni2
+InfoStream_com.helloworld.com.testjni2
+NetworkInfoStream_WIFI
+SensorInfoStream_Goldfish 3-axis Accelerometer
+BatteryInfo_status
+BatteryInfo_isCharging
+BatteryInfo_chargePlug
+BatteryInfo_usbCharge
+BatteryInfo_acCharge
+NetworkInfo_TYPE_WIFI
+InfoStream_com.testjni2
+TimeInfoStream_com.android.systemui
+TimeInfoStream_com.android.music
+TimeInfoStream_com.google.android.gms
+web/InfoStream_com.helloworld.com.testjni2
+web/NetworkInfoStream_WIFI
+web/SensorInfoStream_Goldfish 3-axis Accelerometer
+web/BatteryInfo_status
+web/BatteryInfo_isCharging
+web/BatteryInfo_chargePlug
+web/BatteryInfo_usbCharge
+web/BatteryInfo_acCharge
+web/NetworkInfo_TYPE_WIFI

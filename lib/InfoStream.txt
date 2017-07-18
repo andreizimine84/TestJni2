@@ -1,6 +1,0 @@
-
-com.helloworld.com.testjni2	33512
-
-com.helloworld.com.testjni2	33512
-
-com.helloworld.com.testjni2	33512

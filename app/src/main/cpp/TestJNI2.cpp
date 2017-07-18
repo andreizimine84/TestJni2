@@ -14,44 +14,48 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
+#include <android/log.h>
 
 #define  LOG_TAG    "NSocket"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  BUFFER_SIZE 1000
 
 int dataLengthRest = 0;
 int count = 0;
-//, jstring port, jstring addr, jstring data, int maxDataLength
- extern "C" {
-     JNIEXPORT jstring JNICALL Java_com_helloworld_testjni2_SelectAndShare_connectToHostJNICPP(JNIEnv * env, jobject obj, jstring fileName);
- };
 
- JNIEXPORT jstring JNICALL Java_com_helloworld_testjni2_SelectAndShare_connectToHostJNICPP(
- 	JNIEnv *env, jobject obj, jstring fileName) {
+extern "C" {
+	JNIEXPORT jstring JNICALL Java_com_testjni2_SelectAndShare_connectToHostJNICPP2(JNIEnv * env, jobject obj, jstring fileName);
+};
 
-	 	char buf[28] = {0};
-	 	char bufFinal[1000] = {0};
-	 	ssize_t bytes_read;
-	 	int fd;
-	 	int sizeOfBuf = 1000;
-	 	int size = 0;
-	 	const char *name = (*env).GetStringUTFChars(fileName, NULL);
-	 	if ((fd = open(name, O_RDONLY)) == -1)
-	 	{
-	 		//__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Log catch %s", "File is not readable");
-			size++;
-	 	}
-	 	jbyteArray firstMacArray = (*env).NewByteArray(1000);
-	 	while((bytes_read = read(fd, buf, 28)) > 0){
+JNIEXPORT jstring JNICALL Java_com_testjni2_SelectAndShare_connectToHostJNICPP2(
+		JNIEnv *env, jobject obj, jstring fileName) {
+	char buffer[BUFFER_SIZE] = {0};
+	ssize_t bytes_read;
+	FILE *fd;
+	const char *name = env->GetStringUTFChars(fileName, NULL);
+	if ((fd = fopen(name, "r")) == NULL) {
+        env->ReleaseStringUTFChars(fileName, name);
+		return NULL;
+	}
+    env->ReleaseStringUTFChars(fileName, name);
 
-	 		strncat(bufFinal, buf, 28);
-
-	 		//__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Log catch %i", bytes_read);
-	 		//__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Log catch %s", buf);
- 	 	}
-
-	 	jstring jstrBuf = (*env).NewStringUTF(bufFinal);
-	 	close(fd);
-	    return jstrBuf;
-	 	//return env->NewStringUTF("Native code rules!");
- 	 }
+	// int fsize = lseek(fd, 0, SEEK_END);
+	// jbyteArray firstMacArray = (*env).NewByteArray(1000);
+	while (fread(buffer, 1, sizeof buffer, fd) > 0) // expecting 1 element of size BUFFER_SIZE
+	{
+		 // process buffer
+	}
+	if (feof(fd))
+	{
+		// hit end of file
+	}
+	else
+	{
+		// some other error interrupted read
+        return NULL;
+	}
+	jstring jstrBuf = env->NewStringUTF(buffer);
+	fclose(fd);
+	return jstrBuf;
+}

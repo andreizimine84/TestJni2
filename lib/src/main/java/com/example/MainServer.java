@@ -55,10 +55,12 @@ public class MainServer extends AbstractHandler
 	        		break;
 	        	totalBytesRead += bytesRead;
             }
-            StringBuilder sb = new StringBuilder();
-            if (contentLength != totalBytesRead) {
-           		System.err.println("totalBytesRead does not match contentLength!");
-    		}
+			String s = new String(buffer);
+			System.out.println(s);
+			StringBuilder sb = new StringBuilder();
+			if (contentLength != totalBytesRead) {
+				System.err.println("totalBytesRead does not match contentLength!");
+			}
        		if(buffer.length == contentLength){
             	try {
 					md = MessageDigest.getInstance("SHA-1");
@@ -72,7 +74,6 @@ public class MainServer extends AbstractHandler
     	        for (int i = 0; i < mdbytes.length; i++) {
     	          sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
     	        }
-
     	        md.reset();
     	        mdbytes = new byte[0];
     		}
@@ -92,6 +93,7 @@ public class MainServer extends AbstractHandler
             	fos.flush();
             	fos.close();
        		}
+
        		sb = null;
         	baos.flush();
         	baos.close();

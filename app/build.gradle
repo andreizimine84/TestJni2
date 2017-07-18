@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
-        applicationId 'com.helloworld.com.testjni2'
+        applicationId 'com.testjni2'
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
@@ -15,12 +15,14 @@ android {
                 cppFlags "-frtti -fexceptions"
             }
         }
+        /*
         ndk {
             // Specifies the ABI configurations of your native
             // libraries Gradle should build and package with your APK.
             abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
                     'arm64-v8a'
         }
+        */
     }
     buildTypes {
         release {

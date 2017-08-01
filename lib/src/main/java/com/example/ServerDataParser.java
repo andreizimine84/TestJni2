@@ -272,6 +272,8 @@ public class ServerDataParser {
 						}
 					}
 					if (!lineCheck) {
+						writer.write("Files");
+						writer.write(System.getProperty("line.separator"));
 						writer.write(key);
 						writer.write(System.getProperty("line.separator"));
 					}
@@ -365,10 +367,14 @@ public class ServerDataParser {
 
 										if (!titleAdded && keyReturn != null && output.endsWith("/")) {
 											titleAdded = true;
-											writeFileNameToFile(titleReturn.trim() + "_" + keyReturn.trim(), output);
+											if(!valueReturn.matches(".*[a-z].*"))
+												writeFileNameToFile(titleReturn.trim() + "_" + keyReturn.trim(), output);
+											if(valueReturn.contains("false") || valueReturn.contains("true") || valueReturn.contains("Files")){
+												writeFileNameToFile(titleReturn.trim() + "_" + keyReturn.trim(), output);
+											}
 										}
-									}
-									catch(IOException io){
+							}
+							catch(IOException io){
 										io.printStackTrace();
 									}
 								}

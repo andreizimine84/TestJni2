@@ -45,7 +45,7 @@ body {
 		}
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-DateFormat: <input type="checkbox" id="myCheck">
+DateFormat: <input type="checkbox" id="dateCheck" onChange="OnSelectedIndexChange()">
 </head>
 <body>
 <select id="selectFiles" onChange="OnSelectedIndexChange()">
@@ -71,18 +71,19 @@ d3.csv("fileNames.txt", function(data) {
 function callElement() {
 	var select = document.getElementById("selectFiles");
 	for(var i = 0; i < filesArray.length; i++) {
-	    var opt = filesArray[i];
-	    var el = document.createElement("option");
-	    el.textContent = opt;
-	    el.value = opt;
-	    select.appendChild(el);
+	        var opt = filesArray[i];
+	        var el = document.createElement("option");
+	        el.textContent = opt;
+	        el.value = opt;
+	        select.appendChild(el);
+
 	}
 }	
 
 function OnSelectedIndexChange(){
 	var name = document.getElementById('selectFiles').value;
 	d3.json(name + ".json", function(error, data) {
-        if(document.getElementById("myCheck").checked){
+        if(document.getElementById("dateCheck").checked){
             parseAsDate = true;
         }
         else{
@@ -112,18 +113,17 @@ function OnSelectedIndexChange(){
 		    width = 500 - margin.left - margin.right,
 		    height = 800 - margin.top - margin.bottom;
 
-		var max = d3.max([data[data.length - 1]]);
-		var min = d3.min([data[0]]);
+		var max = d3.max(data);
+		var min = d3.min(data);
 		if (min == max) {
 			min = min - min * 0.1;
 			max = max + min * 0.1;
 		}
 		var x;
 		if (parseAsDate) {
-		    data.sort(function(a,b){return a.getTime() - b.getTime()});
             var length = data.length;
 		    x = d3.time.scale()
-		    .domain([new Date(data[0].toDateString()), new Date(data[length - 1].toDateString())])
+		    .domain([min,max])
 		    ;
 		} else {
 		    x = d3.scale.linear()
@@ -134,7 +134,6 @@ function OnSelectedIndexChange(){
 		data = d3.layout.histogram()
 		.bins(x.ticks(20))
 		(data);
-		console.log("data:" + data);
 
 		var yMax = d3.max(data, function(d){return d.length});
 		var yMin = d3.min(data, function(d){return d.length});
